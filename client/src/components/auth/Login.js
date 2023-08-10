@@ -2,8 +2,13 @@ import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import { login } from '../../actions/auth'
+import { Navigate } from "react-router-dom";
 
-const Login = () => {
+
+const Login = ({ login, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -16,7 +21,11 @@ const Login = () => {
   })
   const onSubmit = async e => {
     e.preventDefault()
-    console.log('Succes');
+    login(email, password)
+  }
+  // Redirect if looged in
+  if (isAuthenticated) {
+    return <Navigate  to='/dashboard'/>
   }
 
   return (
@@ -54,5 +63,12 @@ const Login = () => {
     </>
   )
 }
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
+}
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+})
 
-export default Login
+export default connect(mapStateToProps, { login })(Login)
